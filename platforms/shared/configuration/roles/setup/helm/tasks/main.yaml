@@ -15,7 +15,9 @@
 
   - name: Install helm
     get_url:
-      url: https://get.helm.sh/helm-{{ helm.version | default(default.version) }}-{{ helm.os }}-{{ helm.arch }}.tar.gz
+      # 修改下载地址为国内镜像
+      url: https://mirrors.huaweicloud.com/helm/{{ helm.version | default(default.version) }}/helm-{{ helm.version | default(default.version) }}-{{ helm.os }}-{{ helm.arch }}.tar.gz
+#      url: https://get.helm.sh/helm-{{ helm.version | default(default.version) }}-{{ helm.os }}-{{ helm.arch }}.tar.gz
       dest: "{{ tmp_directory.path }}/helm.tar.gz"
       mode: 0755
       checksum: "{{ helm.checksum | default(default.checksum) }}"

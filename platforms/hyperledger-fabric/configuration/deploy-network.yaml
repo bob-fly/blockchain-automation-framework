@@ -29,10 +29,10 @@
         kubernetes: "{{ item.k8s }}"
         release_dir: "{{playbook_dir}}/../../../{{item.gitops.release_dir}}/{{ item.name | lower }}"
       loop: "{{ network['organizations'] }}"
-    
+
     #Setup Vault-Kubernetes accesses and Regcred for docker registry
     - name: Setup Vault Kubernetes for each organization
-      include_role: 
+      include_role:
         name: "setup/vault_kubernetes"
       vars:
         component_name: "{{ item.name | lower }}-net"
@@ -42,7 +42,7 @@
         auth_path: "{{ network.env.type }}{{ item.name | lower }}-net-auth"
       loop: "{{ network['organizations'] }}"
 
-    # Create Storageclass 
+    # Create Storageclass
     - name: Create storageclass for each organization
       include_role:
         name: "create/storageclass"
@@ -52,7 +52,7 @@
         kubernetes: "{{ item.k8s }}"
         release_dir: "{{playbook_dir}}/../../../{{item.gitops.release_dir}}/{{ item.name | lower }}"
       loop: "{{ network['organizations'] }}"
-        
+
     # Create CA Server helm-value files and check-in
     - name: Create CA server for each organization
       include_role:
@@ -70,7 +70,7 @@
         values_dir: "{{playbook_dir}}/../../../{{item.gitops.release_dir}}/{{ item.name | lower }}"
       loop: "{{ network['organizations'] }}"
       when: item.services.ca is defined
-        
+
     # Create CA Tools helm-value files and check-in
     - name: Create CA tools for each organization
       include_role:
@@ -92,15 +92,15 @@
       include_role:
         name: "create/crypto_script"
       vars:
-        component_type: "{{ item.type | lower}}"        
+        component_type: "{{ item.type | lower}}"
         orderers: "{{ item.services.orderers }}"
       loop: "{{ network['organizations'] }}"
 
     #Creating a pause so that the client certificates are valid
     # You can continue if the CA-server pods are running for more than 5 minutes
-    - pause:
-        prompt: "Sleeping... so that the client certificates are valid"
-        minutes: 6
+#    - pause:
+#        prompt: "Sleeping... so that the client certificates are valid"
+#        minutes: 6
 
     # Create Orderer crypto materials
     - name: Create crypto materials for each orderer
@@ -118,7 +118,7 @@
         vault: "{{ item.vault }}"
       loop: "{{ network['organizations'] }}"
       when: item.type == 'orderer'
-    
+
     # Create Organization crypto materials
     - name: Create crypto materials for each peer
       include_role:

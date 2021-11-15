@@ -76,18 +76,30 @@
 
 ############################################################################################
 # This task fetches the configtx gen tar file from the mentioned URL
-- name: "Getting the configtxgen binary tar"
+- name: "Getting the configtxgen binary tar by url"
   get_url:
     url: https://github.com/hyperledger/fabric/releases/download/v{{network.version}}/hyperledger-fabric-{{install_os}}-{{install_arch}}-{{network.version}}.tar.gz
-    dest: "{{ tmp_directory.path }}"
-  when: config_stat_result.stat.exists == False
+    dest: "{{ tmp_directory.path }}/configtxgen.tar.gz"
+  register: configtxgen_download
+  when: config_stat_result.stat.exists == False and ( network.local.hyperledger_fabric.configtxgen.installPackage is undefined or network.local.hyperledger_fabric.configtxgen.installPackage is none)
+
+############################################################################################
+# This task fetches the configtx gen tar file from the mentioned URL
+- name: "Getting the configtxgen binary tar by local"
+  copy:
+    src: "{{ network.local.hyperledger_fabric.configtxgen.installPackage }}"
+    dest: "{{ tmp_directory.path }}/configtxgen.tar.gz"
+    mode: 0755
+  register: configtxgen_download
+  when: config_stat_result.stat.exists == False and network.local.hyperledger_fabric.configtxgen.installPackage is defined and not network.local.hyperledger_fabric.configtxgen.installPackage is none
+
 
 
 ############################################################################################
 # This task unzips the above downloaded tar file
 - name: "Unziping the downloaded file"
   unarchive:
-    src: "{{ tmp_directory.path }}/hyperledger-fabric-{{install_os}}-{{install_arch}}-{{network.version}}.tar.gz"
+    src: "{{ configtxgen_download.dest }}"
     dest: "{{ tmp_directory.path }}"
   when: config_stat_result.stat.exists == False
 

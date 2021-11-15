@@ -7,3 +7,5 @@ sc_templates:
   minikube-peer: mini_sc.tpl
   digitalocean-orderer: digitalocean_sc.tpl
   digitalocean-peer: digitalocean_sc.tpl
+  fuseim-orderer: fuseim_sc.tpl
+  fuseim-peer: fuseim_sc.tpl

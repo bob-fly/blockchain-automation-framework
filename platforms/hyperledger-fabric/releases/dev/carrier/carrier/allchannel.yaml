@@ -1,0 +1,43 @@
+apiVersion: helm.fluxcd.io/v1
+kind: HelmRelease
+metadata:
+  name: channel-carrier-allchannel
+  namespace: carrier-net
+  annotations:
+    fluxcd.io/automated: "false"
+spec:
+  releaseName: channel-carrier-allchannel
+  chart:
+    git: ssh://git@github.com/bob-fly/blockchain-automation-framework.git
+    ref: test
+    path: platforms/hyperledger-fabric/charts/create_channel   
+  values:
+    metadata:
+      namespace: carrier-net
+      network:
+        version 2.2.0
+      images:
+        fabrictools: hyperledger/fabric-tools:2.2.0
+        alpineutils: reg.hrlyit.com/hyperledgerlabs/alpine-utils:1.0
+    peer:
+      name: peer0
+      address: peer0.carrier-net:7051
+      localmspid: carrierMSP
+      loglevel: debug
+      tlsstatus: true
+
+    vault:
+      role: vault-role
+      address: http://172.16.200.174:8200
+      authpath: dev2carrier-net-auth
+      adminsecretprefix: secret/crypto/peerOrganizations/carrier-net/users/admin
+      orderersecretprefix: secret/crypto/peerOrganizations/carrier-net/orderer 
+      serviceaccountname: vault-auth
+      imagesecretname: regcred
+
+    channel:
+      name: allchannel
+    orderer:
+      address: orderer1.supplychain-net:7050
+    channeltx: |-
+      CpkEChgKFggCGgYI+KnNjAYiCmFsbGNoYW5uZWwS/AMK+QMKCmFsbGNoYW5uZWwSZhJUCgtBcHBsaWNhdGlvbhJFEg4KCmNhcnJpZXJNU1ASABIMCghzdG9yZU1TUBIAEhAKDHdhcmVob3VzZU1TUBIAEhMKD21hbnVmYWN0dXJlck1TUBIAGg4KCkNvbnNvcnRpdW0SABqCAxLWAgoLQXBwbGljYXRpb24SxgIIARIQCgx3YXJlaG91c2VNU1ASABITCg9tYW51ZmFjdHVyZXJNU1ASABIOCgpjYXJyaWVyTVNQEgASDAoIc3RvcmVNU1ASABokCgxDYXBhYmlsaXRpZXMSFBIKCggKBFYyXzASABoGQWRtaW5zIiIKB1dyaXRlcnMSFxINCAMSCQoHV3JpdGVycxoGQWRtaW5zIiIKBkFkbWlucxIYEg4IAxIKCgZBZG1pbnMQAhoGQWRtaW5zIiwKC0VuZG9yc2VtZW50Eh0SEwgDEg8KC0VuZG9yc2VtZW50EAIaBkFkbWlucyI1ChRMaWZlY3ljbGVFbmRvcnNlbWVudBIdEhMIAxIPCgtFbmRvcnNlbWVudBACGgZBZG1pbnMiIgoHUmVhZGVycxIXEg0IAxIJCgdSZWFkZXJzGgZBZG1pbnMqBkFkbWlucxonCgpDb25zb3J0aXVtEhkSFwoVU3VwcGx5Q2hhaW5Db25zb3J0aXVt

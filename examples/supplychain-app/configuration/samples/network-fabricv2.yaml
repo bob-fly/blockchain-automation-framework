@@ -49,6 +49,7 @@ network:
     - organization:
       name: carrier
       type: creator
+      org_status: new
       peers:
       - peer:
         name: peer0
@@ -58,6 +59,7 @@ network:
     - organization:      
       name: store
       type: joiner
+      org_status: new
       peers:
       - peer:
         name: peer0
@@ -67,6 +69,7 @@ network:
     - organization:
       name: warehouse
       type: joiner
+      org_status: new
       peers:
       - peer:
         name: peer0
@@ -76,6 +79,7 @@ network:
     - organization:
       name: manufacturer
       type: joiner
+      org_status: new
       peers:
       - peer:
         name: peer0
@@ -98,6 +102,7 @@ network:
       location: London
       subject: "O=Orderer,L=51.50/-0.13/London,C=GB"
       type: orderer
+      org_status: new
       external_url_suffix: org1ambassador.blockchaincloudpoc.com
       ca_data:
         url: ca.supplychain-net:7054
@@ -183,6 +188,7 @@ network:
       location: Zurich
       subject: "O=Manufacturer,OU=Manufacturer,L=47.38/8.54/Zurich,C=CH"
       type: peer
+      org_status: new
       external_url_suffix: org2ambassador.blockchaincloudpoc.com
       ca_data:
         url: ca.manufacturer-net:7054
@@ -275,6 +281,7 @@ network:
       location: London
       subject: "O=Carrier,OU=Carrier,L=51.50/-0.13/London,C=GB"
       type: peer
+      org_status: new
       external_url_suffix: org3ambassador.blockchaincloudpoc.com
       ca_data:
         url: ca.carrier-net:7054
@@ -368,6 +375,7 @@ network:
       location: New York
       subject: "O=Store,OU=Store,L=40.73/-74/New York,C=US"
       type: peer
+      org_status: new
       external_url_suffix: org3ambassador.blockchaincloudpoc.com
       ca_data:
         url: ca.store-net:7054
@@ -461,6 +469,7 @@ network:
       location: Boston
       subject: "O=Warehouse,OU=Warehouse,L=42.36/-71.06/Boston,C=US"
       type: peer
+      org_status: new
       external_url_suffix: org2ambassador.blockchaincloudpoc.com
       ca_data:
         url: ca.warehouse-net:7054

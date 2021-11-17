@@ -5,29 +5,29 @@ network:
   # Network level configuration specifies the attributes required for each organization
   # to join an existing network.
   type: fabric
-  version: 1.4.0
+  version: 1.4.4
   #enabled flag is frontend is enabled for peers
   frontend: enabled
 
   #Environment section for Kubernetes setup
   env:
     type: demo-fabric               # tag for the environment. Important to run multiple flux on single cluster
-    proxy: haproxy                  # values can be 'haproxy' or 'ambassador'
+    proxy: none                  # values can be 'haproxy' or 'ambassador'
     ambassadorPorts:                # Any additional Ambassador ports can be given here, this is valid only if proxy='ambassador'
       portRange:              # For a range of ports 
         from: 15010 
         to: 15020
     # ports: 15020,15021      # For specific ports
-    retry_count: 20                 # Retry count for the checks
-    external_dns: enabled           # Should be enabled if using external-dns for automatic route configuration
+    retry_count: 40                 # Retry count for the checks
+    external_dns: disabled           # Should be enabled if using external-dns for automatic route configuration
   
   # Docker registry details where images are stored. This will be used to create k8s secrets
   # Please ensure all required images are built and stored in this registry. 
   # Do not check-in docker_password.
   docker:
-    url: "docker_url"
-    username: "docker_username"
-    password: "docker_password"
+    url: "reg.hrlyit.com/hyperledgerlabs"
+    username: "fengsibo"
+    password: "1234QWer"
   
   # Remote connection information for orderer (will be blank or removed for hosting organization)
   orderers:
@@ -35,8 +35,8 @@ network:
       type: orderer
       name: orderer
       org_name: supplychain
-      uri: orderer.org1ambassador.blockchaincloudpoc.com
-      certificate: directory/file1.cert
+      uri: orderer.supplychain-net:7050
+      certificate: /Users/sibo/Documents/programming/tools/baf/blockchain-automation-framework/examples/supplychain-app/configuration/samples/file1.cert
   
   # The channels defined for a network with participating peers in each channel
   channels:
@@ -53,8 +53,8 @@ network:
       - peer:
         name: peer0
         type: validating
-        gossipAddress: peer0.carrier-net.org3ambassador.blockchaincloudpoc.com
-      ordererAddress: orderer.org1ambassador.blockchaincloudpoc.com
+        gossipAddress: peer0.carrier-net:7051
+      ordererAddress: orderer.supplychain-net:7050
     - organization:      
       name: store
       type: joiner
@@ -62,8 +62,8 @@ network:
       - peer:
         name: peer0
         type: validating
-        gossipAddress: peer0.store-net.org3ambassador.blockchaincloudpoc.com
-      ordererAddress: orderer.org1ambassador.blockchaincloudpoc.com
+        gossipAddress: peer0.store-net:7051
+      ordererAddress: orderer.supplychain-net:7050
     - organization:
       name: warehouse
       type: joiner
@@ -71,8 +71,8 @@ network:
       - peer:
         name: peer0
         type: validating
-        gossipAddress: peer0.warehouse-net.org2ambassador.blockchaincloudpoc.com
-      ordererAddress: orderer.org1ambassador.blockchaincloudpoc.com
+        gossipAddress: peer0.warehouse-net:7051
+      ordererAddress: orderer.supplychain-net:7050
     - organization:
       name: manufacturer
       type: joiner
@@ -80,8 +80,8 @@ network:
       - peer:
         name: peer0
         type: validating
-        gossipAddress: peer0.manufacturer-net.org2ambassador.blockchaincloudpoc.com
-      ordererAddress: orderer.org1ambassador.blockchaincloudpoc.com
+        gossipAddress: peer0.manufacturer-net:7051
+      ordererAddress: orderer.supplychain-net:7050
     genesis:
       name: OrdererGenesis  
 
@@ -103,7 +103,7 @@ network:
         url: ca.supplychain-net:7054
         certificate: file/server.crt 
   
-      cloud_provider: aws   # Options: aws, azure, gcp
+      cloud_provider: fuseim   # Options: aws, azure, gcp
       aws:
         access_key: "aws_access_key"        # AWS Access key, only used when cloud_provider=aws
         secret_key: "aws_secret_key"        # AWS Secret key, only used when cloud_provider=aws
@@ -111,30 +111,29 @@ network:
       # Kubernetes cluster deployment variables. The config file path and name has to be provided in case
       # the cluster has already been created.
       k8s:
-        region: "cluster_region"
-        context: "cluster_context"
-        config_file: "cluster_config"
+        region: "docker-desktop"
+        context: "docker-desktop"
+        config_file: "/Users/sibo/Documents/programming/tools/baf/blockchain-automation-framework/build/config"
 
       # Hashicorp Vault server address and root-token. Vault should be unsealed.
       # Do not check-in root_token
       vault:
-        url: "vault_addr"
-        root_token: "vault_root_token"
-        secret_path: "secret"
+        url: "http://sibo.local:8200"
+        root_token: "s.gsHeLtht5CYP9sWSoXzTPDc8"
 
       # Git Repo details which will be used by GitOps/Flux.
       # Do not check-in git_password
       gitops:
-        git_protocol: "https" # Option for git over https or ssh
-        git_url: "gitops_ssh_url"         # Gitops https or ssh url for flux value files like "https://github.com/hyperledger-labs/blockchain-automation-framework.git"
-        branch: "gitops_branch"           # Git branch where release is being made
-        release_dir: "gitops_release_dir" # Relative Path in the Git repo for flux sync per environment. 
-        chart_source: "gitops_charts"     # Relative Path where the Helm charts are stored in Git repo
-        git_repo: "gitops_repo_url"   # Gitops git repository URL for git push like "github.com/hyperledger-labs/blockchain-automation-framework.git"
-        username: "git_username"          # Git Service user who has rights to check-in in all branches
-        password: "git_access_token"          # Git Server user password/token (Optional for ssh; Required for https)
-        email: "git_email"                # Email to use in git config
-        private_key: "path_to_private_key"          # Path to private key file which has write-access to the git repo (Optional for https; Required for ssh)
+        git_protocol: "ssh" # Option for git over https or ssh
+        git_url: "ssh://git@github.com/bob-fly/blockchain-automation-framework.git"         # Gitops https or ssh url for flux value files
+        branch: "test"           # Git branch where release is being made
+        release_dir: "platforms/hyperledger-fabric/releases/dev" # Relative Path in the Git repo for flux sync per environment.
+        chart_source: "platforms/hyperledger-fabric/charts"     # Relative Path where the Helm charts are stored in Git repo
+        git_repo: "github.com/bob-fly/blockchain-automation-framework.git"   # Gitops git repository URL for git push  (without https://)
+        username: "bob-fly"          # Git Service user who has rights to check-in in all branches
+        password: "19889012fsb"          # Git Server user password/token (Optional for ssh; Required for https)
+        email: "sibo_feng@126.com"                # Email to use in git config
+        private_key: "/Users/sibo/Documents/programming/tools/baf/git/gitops"          # Path to private key file which has write-access to the git repo (Optional for https; Required for ssh)
 
       #Optional for infrastructure configuration files.
       infrastructure:
@@ -153,16 +152,16 @@ network:
             port: 7054
         
         consensus:
-          name: kafka
-          type: broker
-          replicas: 4
+          name: raft
+          type: etcdraft
+          replicas: 3
           grpc:
             port: 9092
                 
         orderer:
           name: orderer
           type: orderer          
-          consensus: kafka
+          consensus: raft
           grpc:
             port: 7050       
         
@@ -180,38 +179,35 @@ network:
         url: ca.manufacturer-net:7054
         certificate: file/server.crt
 
-      cloud_provider: aws   # Options: aws, azure, gcp
-      aws:
-        access_key: "aws_access_key"        # AWS Access key, only used when cloud_provider=aws
-        secret_key: "aws_secret_key"        # AWS Secret key, only used when cloud_provider=aws
+      cloud_provider: fuseim   # Options: aws, azure, gcp
   
       # Kubernetes cluster deployment variables. The config file path and name has to be provided in case
       # the cluster has already been created.
       k8s:
-        region: "cluster_region"
-        context: "cluster_context"
-        config_file: "cluster_config"
+        region: "docker-desktop"
+        context: "docker-desktop"
+        config_file: "/Users/sibo/Documents/programming/tools/baf/blockchain-automation-framework/build/config"
 
       # Hashicorp Vault server address and root-token. Vault should be unsealed.
       # Do not check-in root_token
       vault:
-        url: "vault_addr"
-        root_token: "vault_root_token"
+        url: "http://sibo.local:8200"
+        root_token: "s.gsHeLtht5CYP9sWSoXzTPDc8"
         secret_path: "secret"
 
       # Git Repo details which will be used by GitOps/Flux.
       # Do not check-in git_password
       gitops:
-        git_protocol: "https" # Option for git over https or ssh
-        git_url: "gitops_ssh_url"         # Gitops https or ssh url for flux value files like "https://github.com/hyperledger-labs/blockchain-automation-framework.git"
-        branch: "gitops_branch"           # Git branch where release is being made
-        release_dir: "gitops_release_dir" # Relative Path in the Git repo for flux sync per environment. 
-        chart_source: "gitops_charts"     # Relative Path where the Helm charts are stored in Git repo
-        git_repo: "gitops_repo_url"   # Gitops git repository URL for git push like "github.com/hyperledger-labs/blockchain-automation-framework.git"
-        username: "git_username"          # Git Service user who has rights to check-in in all branches
-        password: "git_access_token"          # Git Server user password/token (Optional for ssh; Required for https)
-        email: "git_email"                # Email to use in git config
-        private_key: "path_to_private_key"          # Path to private key file which has write-access to the git repo (Optional for https; Required for ssh)
+        git_protocol: "ssh" # Option for git over https or ssh
+        git_url: "ssh://git@github.com/bob-fly/blockchain-automation-framework.git"         # Gitops https or ssh url for flux value files
+        branch: "test"           # Git branch where release is being made
+        release_dir: "platforms/hyperledger-fabric/releases/dev" # Relative Path in the Git repo for flux sync per environment.
+        chart_source: "platforms/hyperledger-fabric/charts"     # Relative Path where the Helm charts are stored in Git repo
+        git_repo: "github.com/bob-fly/blockchain-automation-framework.git"   # Gitops git repository URL for git push  (without https://)
+        username: "bob-fly"          # Git Service user who has rights to check-in in all branches
+        password: "19889012fsb"          # Git Server user password/token (Optional for ssh; Required for https)
+        email: "sibo_feng@126.com"                # Email to use in git config
+        private_key: "/Users/sibo/Documents/programming/tools/baf/git/gitops"          # Path to private key file which has write-access to the git repo (Optional for https; Required for ssh)
 
       #Optional for infrastructure configuration files.
       infrastructure:
@@ -231,7 +227,7 @@ network:
         - peer:
           name: peer0          
           type: peer          
-          gossippeeraddress: peer0.manufacturer-net.org2ambassador.blockchaincloudpoc.com          
+          gossippeeraddress: peer0.manufacturer-net:7051
           grpc:
             port: 7051         
           events:
@@ -248,16 +244,16 @@ network:
             targetPort: 80
             port: 8080
           chaincode:
-            name: "chaincode_name"
-            version: "chaincode_version"
-            maindirectory: "chaincode_main"
+            name: "supplychain"
+            version: "v1"
+            maindirectory: "supplychain/cmd"
             repository:
-              username: "git_username"          # Git Service user who has rights to check-in in all branches
-              password: "git_password"
+              username: "bob-fly"          # Git Service user who has rights to check-in in all branches
+              password: "19889012fsb"
               url: "github.com/hyperledger-labs/blockchain-automation-framework.git"
-              branch: develop
-              path: "chaincode_src"
-            arguments: 'chaincode_args'
+              branch: test
+              path: "examples/supplychain-app/fabric/chaincode_rest_server/chaincode/"
+            arguments: '\"init\",\"\"'
             endorsements: ""
       #variables for frontend application
       app:
@@ -275,7 +271,7 @@ network:
         url: ca.carrier-net:7054
         certificate: file/server.crt
       
-      cloud_provider: aws   # Options: aws, azure, gcp
+      cloud_provider: fuseim   # Options: aws, azure, gcp
       aws:
         access_key: "aws_access_key"        # AWS Access key, only used when cloud_provider=aws
         secret_key: "aws_secret_key"        # AWS Secret key, only used when cloud_provider=aws
@@ -283,30 +279,30 @@ network:
       # Kubernetes cluster deployment variables. The config file path and name has to be provided in case
       # the cluster has already been created.
       k8s:
-        region: "cluster_region"
-        context: "cluster_context"
-        config_file: "cluster_config"
+        region: "docker-desktop"
+        context: "docker-desktop"
+        config_file: "/Users/sibo/Documents/programming/tools/baf/blockchain-automation-framework/build/config"
 
       # Hashicorp Vault server address and root-token. Vault should be unsealed.
       # Do not check-in root_token
       vault:
-        url: "vault_addr"
-        root_token: "vault_root_token"
+        url: "http://sibo.local:8200"
+        root_token: "s.gsHeLtht5CYP9sWSoXzTPDc8"
         secret_path: "secret"
 
       # Git Repo details which will be used by GitOps/Flux.
       # Do not check-in git_password
       gitops:
-        git_protocol: "https" # Option for git over https or ssh
-        git_url: "gitops_ssh_url"         # Gitops https or ssh url for flux value files like "https://github.com/hyperledger-labs/blockchain-automation-framework.git"
-        branch: "gitops_branch"           # Git branch where release is being made
-        release_dir: "gitops_release_dir" # Relative Path in the Git repo for flux sync per environment. 
-        chart_source: "gitops_charts"     # Relative Path where the Helm charts are stored in Git repo
-        git_repo: "gitops_repo_url"   # Gitops git repository URL for git push like "github.com/hyperledger-labs/blockchain-automation-framework.git"
-        username: "git_username"          # Git Service user who has rights to check-in in all branches
-        password: "git_access_token"          # Git Server user password/token (Optional for ssh; Required for https)
-        email: "git_email"                # Email to use in git config
-        private_key: "path_to_private_key"          # Path to private key file which has write-access to the git repo (Optional for https; Required for ssh)
+        git_protocol: "ssh" # Option for git over https or ssh
+        git_url: "ssh://git@github.com/bob-fly/blockchain-automation-framework.git"         # Gitops https or ssh url for flux value files
+        branch: "test"           # Git branch where release is being made
+        release_dir: "platforms/hyperledger-fabric/releases/dev" # Relative Path in the Git repo for flux sync per environment.
+        chart_source: "platforms/hyperledger-fabric/charts"     # Relative Path where the Helm charts are stored in Git repo
+        git_repo: "github.com/bob-fly/blockchain-automation-framework.git"   # Gitops git repository URL for git push  (without https://)
+        username: "bob-fly"          # Git Service user who has rights to check-in in all branches
+        password: "19889012fsb"          # Git Server user password/token (Optional for ssh; Required for https)
+        email: "sibo_feng@126.com"                # Email to use in git config
+        private_key: "/Users/sibo/Documents/programming/tools/baf/git/gitops"          # Path to private key file which has write-access to the git repo (Optional for https; Required for ssh)
 
       #Optional for infrastructure configuration files.
       infrastructure:
@@ -324,7 +320,7 @@ network:
         - peer:
           name: peer0          
           type: peer
-          gossippeeraddress: peer0.carrier-net.org3ambassador.blockchaincloudpoc.com          
+          gossippeeraddress: peer0.carrier-net:7051
           grpc:
             port: 7051         
           events:
@@ -341,16 +337,16 @@ network:
             targetPort: 80
             port: 8080
           chaincode:
-            name: "chaincode_name"
-            version: "chaincode_version"
-            maindirectory: "chaincode_main"
+            name: "supplychain"
+            version: "v1"
+            maindirectory: "supplychain/cmd"
             repository:
-              username: "git_username"          # Git Service user who has rights to check-in in all branches
-              password: "git_password"
+              username: "bob-fly"          # Git Service user who has rights to check-in in all branches
+              password: "19889012fsb"
               url: "github.com/hyperledger-labs/blockchain-automation-framework.git"
-              branch: develop
-              path: "chaincode_src"
-            arguments: 'chaincode_args'
+              branch: test
+              path: "examples/supplychain-app/fabric/chaincode_rest_server/chaincode/"
+            arguments: '\"init\",\"\"'
             endorsements: ""
       #variables for frontend application
       app:
@@ -368,7 +364,7 @@ network:
         url: ca.store-net:7054
         certificate: file/server.crt
       
-      cloud_provider: aws   # Options: aws, azure, gcp
+      cloud_provider: fuseim   # Options: aws, azure, gcp
       aws:
         access_key: "aws_access_key"        # AWS Access key, only used when cloud_provider=aws
         secret_key: "aws_secret_key"        # AWS Secret key, only used when cloud_provider=aws
@@ -376,30 +372,30 @@ network:
       # Kubernetes cluster deployment variables. The config file path and name has to be provided in case
       # the cluster has already been created.
       k8s:
-        region: "cluster_region"
-        context: "cluster_context"
-        config_file: "cluster_config"
+        region: "docker-desktop"
+        context: "docker-desktop"
+        config_file: "/Users/sibo/Documents/programming/tools/baf/blockchain-automation-framework/build/config"
 
       # Hashicorp Vault server address and root-token. Vault should be unsealed.
       # Do not check-in root_token
       vault:
-        url: "vault_addr"
-        root_token: "vault_root_token"
+        url: "http://sibo.local:8200"
+        root_token: "s.gsHeLtht5CYP9sWSoXzTPDc8"
         secret_path: "secret"
 
       # Git Repo details which will be used by GitOps/Flux.
       # Do not check-in git_password
       gitops:
-        git_protocol: "https" # Option for git over https or ssh
-        git_url: "gitops_ssh_url"         # Gitops https or ssh url for flux value files like "https://github.com/hyperledger-labs/blockchain-automation-framework.git"
-        branch: "gitops_branch"           # Git branch where release is being made
-        release_dir: "gitops_release_dir" # Relative Path in the Git repo for flux sync per environment. 
-        chart_source: "gitops_charts"     # Relative Path where the Helm charts are stored in Git repo
-        git_repo: "gitops_repo_url"   # Gitops git repository URL for git push like "github.com/hyperledger-labs/blockchain-automation-framework.git"
-        username: "git_username"          # Git Service user who has rights to check-in in all branches
-        password: "git_access_token"          # Git Server user password/token (Optional for ssh; Required for https)
-        email: "git_email"                # Email to use in git config
-        private_key: "path_to_private_key"          # Path to private key file which has write-access to the git repo (Optional for https; Required for ssh)
+        git_protocol: "ssh" # Option for git over https or ssh
+        git_url: "ssh://git@github.com/bob-fly/blockchain-automation-framework.git"         # Gitops https or ssh url for flux value files
+        branch: "test"           # Git branch where release is being made
+        release_dir: "platforms/hyperledger-fabric/releases/dev" # Relative Path in the Git repo for flux sync per environment.
+        chart_source: "platforms/hyperledger-fabric/charts"     # Relative Path where the Helm charts are stored in Git repo
+        git_repo: "github.com/bob-fly/blockchain-automation-framework.git"   # Gitops git repository URL for git push  (without https://)
+        username: "bob-fly"          # Git Service user who has rights to check-in in all branches
+        password: "19889012fsb"          # Git Server user password/token (Optional for ssh; Required for https)
+        email: "sibo_feng@126.com"                # Email to use in git config
+        private_key: "/Users/sibo/Documents/programming/tools/baf/git/gitops"          # Path to private key file which has write-access to the git repo (Optional for https; Required for ssh)
 
       #Optional for infrastructure configuration files.
       infrastructure:
@@ -417,7 +413,7 @@ network:
         - peer:
           name: peer0          
           type: peer
-          gossippeeraddress: peer0.store-net.org3ambassador.blockchaincloudpoc.com          
+          gossippeeraddress: peer0.store-net:7051
           grpc:
             port: 7051
           events:
@@ -434,16 +430,16 @@ network:
             targetPort: 80
             port: 8080
           chaincode:
-            name: "chaincode_name"
-            version: "chaincode_version"
-            maindirectory: "chaincode_main"
+            name: "supplychain"
+            version: "v1"
+            maindirectory: "supplychain/cmd"
             repository:
-              username: "git_username"          # Git Service user who has rights to check-in in all branches
-              password: "git_password"
+              username: "bob-fly"          # Git Service user who has rights to check-in in all branches
+              password: "19889012fsb"
               url: "github.com/hyperledger-labs/blockchain-automation-framework.git"
-              branch: develop
-              path: "chaincode_src"
-            arguments: 'chaincode_args'
+              branch: test
+              path: "examples/supplychain-app/fabric/chaincode_rest_server/chaincode/"
+            arguments: '\"init\",\"\"'
             endorsements: ""
        #variables for frontend application
       app:
@@ -461,7 +457,7 @@ network:
         url: ca.warehouse-net:7054
         certificate: file/server.crt
       
-      cloud_provider: aws   # Options: aws, azure, gcp
+      cloud_provider: fuseim   # Options: aws, azure, gcp
       aws:
         access_key: "aws_access_key"        # AWS Access key, only used when cloud_provider=aws
         secret_key: "aws_secret_key"        # AWS Secret key, only used when cloud_provider=aws
@@ -469,30 +465,30 @@ network:
       # Kubernetes cluster deployment variables. The config file path and name has to be provided in case
       # the cluster has already been created.
       k8s:
-        region: "cluster_region"
-        context: "cluster_context"
-        config_file: "cluster_config"
+        region: "docker-desktop"
+        context: "docker-desktop"
+        config_file: "/Users/sibo/Documents/programming/tools/baf/blockchain-automation-framework/build/config"
 
       # Hashicorp Vault server address and root-token. Vault should be unsealed.
       # Do not check-in root_token
       vault:
-        url: "vault_addr"
-        root_token: "vault_root_token"
+        url: "http://sibo.local:8200"
+        root_token: "s.gsHeLtht5CYP9sWSoXzTPDc8"
         secret_path: "secret"
 
       # Git Repo details which will be used by GitOps/Flux.
       # Do not check-in git_password
       gitops:
-        git_protocol: "https" # Option for git over https or ssh
-        git_url: "gitops_ssh_url"         # Gitops https or ssh url for flux value files like "https://github.com/hyperledger-labs/blockchain-automation-framework.git"
-        branch: "gitops_branch"           # Git branch where release is being made
-        release_dir: "gitops_release_dir" # Relative Path in the Git repo for flux sync per environment. 
-        chart_source: "gitops_charts"     # Relative Path where the Helm charts are stored in Git repo
-        git_repo: "gitops_repo_url"   # Gitops git repository URL for git push like "github.com/hyperledger-labs/blockchain-automation-framework.git"
-        username: "git_username"          # Git Service user who has rights to check-in in all branches
-        password: "git_access_token"          # Git Server user password/token (Optional for ssh; Required for https)
-        email: "git_email"                # Email to use in git config
-        private_key: "path_to_private_key"          # Path to private key file which has write-access to the git repo (Optional for https; Required for ssh)
+        git_protocol: "ssh" # Option for git over https or ssh
+        git_url: "ssh://git@github.com/bob-fly/blockchain-automation-framework.git"         # Gitops https or ssh url for flux value files
+        branch: "test"           # Git branch where release is being made
+        release_dir: "platforms/hyperledger-fabric/releases/dev" # Relative Path in the Git repo for flux sync per environment.
+        chart_source: "platforms/hyperledger-fabric/charts"     # Relative Path where the Helm charts are stored in Git repo
+        git_repo: "github.com/bob-fly/blockchain-automation-framework.git"   # Gitops git repository URL for git push  (without https://)
+        username: "bob-fly"          # Git Service user who has rights to check-in in all branches
+        password: "19889012fsb"          # Git Server user password/token (Optional for ssh; Required for https)
+        email: "sibo_feng@126.com"                # Email to use in git config
+        private_key: "/Users/sibo/Documents/programming/tools/baf/git/gitops"          # Path to private key file which has write-access to the git repo (Optional for https; Required for ssh)
 
       #Optional for infrastructure configuration files.
       infrastructure:
@@ -510,7 +506,7 @@ network:
         - peer:
           name: peer0          
           type: peer
-          gossippeeraddress: peer0.warehouse-net.org2ambassador.blockchaincloudpoc.com          
+          gossippeeraddress: peer0.warehouse-net:7051
           grpc:
             port: 7051       
           events:
@@ -527,16 +523,16 @@ network:
             targetPort: 80
             port: 8080
           chaincode:
-            name: "chaincode_name"
-            version: "chaincode_version"
-            maindirectory: "chaincode_main"
+            name: "supplychain"
+            version: "v1"
+            maindirectory: "supplychain/cmd"
             repository:
-              username: "git_username"          # Git Service user who has rights to check-in in all branches
-              password: "git_password"
+              username: "bob-fly"          # Git Service user who has rights to check-in in all branches
+              password: "19889012fsb"
               url: "github.com/hyperledger-labs/blockchain-automation-framework.git"
-              branch: develop
-              path: "chaincode_src"
-            arguments: 'chaincode_args'
+              branch: test
+              path: "examples/supplychain-app/fabric/chaincode_rest_server/chaincode/"
+            arguments: '\"init\",\"\"'
             endorsements: ""
       #variables for frontend application
       app:

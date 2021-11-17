@@ -9,6 +9,11 @@ network:
   #enabled flag is frontend is enabled for peers
   frontend: enabled
 
+  local:
+    hyperledger_fabric:
+      configtxgen:
+        installPackage: /Users/sibo/Documents/programming/tools/baf/tar/hyperledger-fabric-darwin-amd64-1.4.4.tar.gz
+
   #Environment section for Kubernetes setup
   env:
     type: demo-fabric               # tag for the environment. Important to run multiple flux on single cluster

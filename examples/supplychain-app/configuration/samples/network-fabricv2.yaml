@@ -158,13 +158,22 @@ network:
           grpc:
             port: 9092
                 
-        orderer:
-          name: orderer
-          type: orderer          
-          consensus: raft
-          grpc:
-            port: 7050       
-        
+#        orderer:
+#          name: orderer
+#          type: orderer
+#          consensus: raft
+#          grpc:
+#            port: 7050
+        orderers:
+          # This sample has multiple orderers as an example.
+          # You can use a single orderer for most production implementations.
+          - orderer:
+            name: orderer
+            type: orderer
+            consensus: raft
+            grpc:
+              port: 7050
+
 
     # Specification for the 2nd organization. Each organization maps to a VPC and a separate k8s cluster
     - organization:

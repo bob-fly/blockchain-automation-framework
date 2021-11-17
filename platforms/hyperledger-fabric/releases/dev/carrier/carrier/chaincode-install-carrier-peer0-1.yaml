@@ -39,7 +39,7 @@ spec:
       address: orderer2.supplychain-net:7050
     chaincode:
       builder: hyperledger/fabric-ccenv:2.2.0
-      name: supplychain
+      name: go-cc
       version: 1
       lang: golang
       maindirectory: cmd
@@ -48,5 +48,5 @@ spec:
         git_username: "bob-fly"
         url: github.com/bob-fly/blockchain-automation-framework.git
         branch: test
-        path: examples/supplychain-app/fabric/chaincode_rest_server/chaincode/supplychain
+        path: examples/go-cc/
       endorsementpolicies:  ''

@@ -1,0 +1,43 @@
+apiVersion: helm.fluxcd.io/v1
+kind: HelmRelease
+metadata:
+  name: anchorpeer-allchannel-warehouse
+  namespace: warehouse-net
+  annotations:
+    fluxcd.io/automated: "false"
+spec:
+  releaseName: anchorpeer-allchannel-warehouse
+  chart:
+    git: ssh://git@github.com/bob-fly/blockchain-automation-framework.git
+    ref: test
+    path: platforms/hyperledger-fabric/charts/anchorpeer
+  values:
+    metadata:
+      namespace: warehouse-net
+      images:
+        fabrictools: hyperledger/fabric-tools:1.4.4
+        alpineutils: reg.hrlyit.com/hyperledgerlabs/alpine-utils:1.0
+
+    peer:
+      name: peer0
+      address: peer0.warehouse-net:7051
+      localmspid: warehouseMSP
+      loglevel: debug
+      tlsstatus: true
+
+    vault:
+      role: vault-role
+      address: http://sibo.local:8200
+      authpath: dev2warehouse-net-auth
+      adminsecretprefix: secret/crypto/peerOrganizations/warehouse-net/users/admin
+      orderersecretprefix: secret/crypto/peerOrganizations/warehouse-net/orderer
+      serviceaccountname: vault-auth
+      imagesecretname: regcred
+
+    channel:
+      name: allchannel      
+    orderer:
+      address: orderer1.supplychain-net:7050
+    anchorstx: |-
+      CqICChAKDggCIgphbGxjaGFubmVsEo0CCooCCgphbGxjaGFubmVsElwSWgoLQXBwbGljYXRpb24SSwgBEj8KDHdhcmVob3VzZU1TUBIvGgcKA01TUBIAIgsKB1JlYWRlcnMSACILCgdXcml0ZXJzEgAiCgoGQWRtaW5zEgAqBkFkbWlucxqdARKaAQoLQXBwbGljYXRpb24SigEIARJ+Cgx3YXJlaG91c2VNU1ASbggBGgcKA01TUBIAGjMKC0FuY2hvclBlZXJzEiQSGgoYChNwZWVyMC53YXJlaG91c2UtbmV0EIs3GgZBZG1pbnMiCwoHUmVhZGVycxIAIgsKB1dyaXRlcnMSACIKCgZBZG1pbnMSACoGQWRtaW5zKgZBZG1pbnM=
+
